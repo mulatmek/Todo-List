@@ -1,0 +1,25 @@
+<%- include("header")-%>
+    <!--   using <%  %>  to write a js scripts   -->
+    <div class ="box" id ="heading">
+        <button   id ="theme">Change Theme</button>
+        <h1 >  <%=listTitle %> </h1>
+    </div>
+    <div class ="box">
+        <%  for(let i =0 ; i<newListItems.length ; i++ ){  %>
+            <div class="item ">
+                <input type="checkbox">
+                 <p> <%= newListItems[i] %></p>
+            </div>
+        <% } %>
+        <form class="item" action="/" method="post">
+            <input type="text" placeholder="הוסף לרשימה " name="newItem" autocomplete="off">
+            <button class="btn" type="submit" name="list" value="<%=listTitle %>">+</button>
+        </form>
+      
+    </div>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="index.js"></script>
+<%- include("footer")-%>
