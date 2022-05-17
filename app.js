@@ -1,16 +1,33 @@
 const express = require("express");
 const bodyParser= require("body-parser");
-const app = express();
-const date = require(__dirname+"//date.js");
-app.use(express.static("public"));
-app.use(bodyParser.urlencoded({extended:true}));
-const items=[];
-const workItems =[];
 
+const mongoose = require("mongoose");
+
+const app = express();
+
+app.use(express.static("public"));
+
+app.use(bodyParser.urlencoded({extended:true}));
 app.set('view engine','ejs');
 
+mongoose.connect('mongodb://localhost:27017/todolistDB',{useNewUrlParser:true});
+const itemsSchema = {
+    name:String
+};
+const Item= mongoose.model("Item",itemsSchema);
+
+
+
 app.get("/",function(req,res){
-    res.render("list",{listTitle:date.getDate(),newListItems:items});
+    Item.find({},function(err,items){
+        let names =[]
+         if(err) console.log(err);
+         else{
+
+            res.render("list",{listTitle:"Today",newListItems: items.map((item)=>item.name)});
+         }
+    });
+    
 });
 
 app.post("/",function(req,res){
@@ -37,6 +54,11 @@ app.get("/about",function(req,res){
     res.render("about");
 });
 
+  
+
 app.listen(3000,function(){
     console.log("Server started on port 3000");
 });
+
+
+  
