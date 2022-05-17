@@ -14,35 +14,78 @@ mongoose.connect('mongodb://localhost:27017/todolistDB',{useNewUrlParser:true});
 const itemsSchema = {
     name:String
 };
+const listSchema ={
+    name:String,
+    items:[]
+}
 const Item= mongoose.model("Item",itemsSchema);
-
-
+const List = mongoose.model("List",listSchema);
+const Item1 = new Item({
+    name:"Welcome to  your todolist!"
+});
+const Item2 = new Item({
+    name:"Hit the  + button to add new item"
+});
+const Item3 = new Item({
+    name:"<-- Hit this to remove item"
+});
+defaultItems=[Item1,Item2,Item3];
 
 app.get("/",function(req,res){
-    Item.find({},function(err,items){
-        let names =[]
-         if(err) console.log(err);
-         else{
-
-            res.render("list",{listTitle:"Today",newListItems: items.map((item)=>item.name)});
-         }
+    
+    Item.find({},function(err,foundItems){
+        if(foundItems.length===0){
+            Item.insertMany(defaultItems,function(err){
+                if(err){
+                    console.log(err);
+                }else{
+                  console.log("Successfully saved default items to DB. ")
+                }
+            });
+        res.redirect("/");
+        }else{
+            if(err){
+                console.log(err);
+            }else{
+               res.render("list",{listTitle:"Today",newListItems: foundItems});
+            }
+        }
+      
     });
     
 });
 
+
 app.post("/",function(req,res){
-    let item = req.body.newItem;
-    if(req.body.list==="work List"){
-        workItems.push(item);
-        res.redirect("/work");
-     } else{
-        items.push(item);
-        res.redirect("/");
-    }
+    const itemName = req.body.newItem;
+    const item = new Item({name:itemName}).save();
+    res.redirect("/");
 });
 
-app.get("/work",function(req,res){
-    res.render("list",{listTitle:"work List",newListItems:workItems});
+app.post("/delete",function(req,res){
+    const checkedItemId =req.body.checkbox;
+    Item.findByIdAndRemove(checkedItemId,function(err){
+        if(!err) console.log("item deleted Successfully");
+    })
+    res.redirect("/");
+});
+
+app.get("/:customListName",function(req,res){
+
+    const customListName= req.params.customListName;
+    List.findOne({"name":customListName},function(err,resualts){
+        if(!resualts){
+            new List({
+                name:customListName,
+                items:defaultItems
+            }).save()
+        }else{
+            console.log("Exist");
+        }
+
+    });
+   
+   
 });
 
 app.post("/work",function(req,res){
