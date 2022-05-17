@@ -57,41 +57,61 @@ app.get("/",function(req,res){
 
 
 app.post("/",function(req,res){
-    const itemName = req.body.newItem;
-    const item = new Item({name:itemName}).save();
-    res.redirect("/");
+    const itemName= req.body.newItem;
+    const listName = req.body.list;
+    console.log(listName);
+    const item = new Item({name:itemName});
+    if(listName==="Today")  {
+        item.save();
+        res.redirect("/"); 
+    } else{
+        List.findOne({name:listName},(err,foundList)=>{
+            if(!err){
+                foundList.items.push(item);
+                foundList.save();
+                res.redirect("/"+listName);
+            }
+            else console.log(err);
+        });
+    }
 });
 
 app.post("/delete",function(req,res){
     const checkedItemId =req.body.checkbox;
+    const listName = req.body.list;
     Item.findByIdAndRemove(checkedItemId,function(err){
         if(!err) console.log("item deleted Successfully");
     })
-    res.redirect("/");
+    if(listName==="Today")
+        res.redirect("/");
+    else res.redirect("/"+listName);
 });
 
 app.get("/:customListName",function(req,res){
 
     const customListName= req.params.customListName;
     List.findOne({"name":customListName},function(err,resualts){
+    if(!err){
         if(!resualts){
-            new List({
+           const list= new List({
                 name:customListName,
                 items:defaultItems
-            }).save()
+            });
+            list.save();
+            res.redirect("/"+customListName);
         }else{
-            console.log("Exist");
+            res.render("list",{listTitle:resualts.name ,newListItems: resualts.items});
+           
         }
+       
+    }
+    else console.log(err);
 
     });
    
    
 });
 
-app.post("/work",function(req,res){
-    let item = rerq.body.newItem;
-    workItems.push(item);
-})
 
 app.get("/about",function(req,res){
     res.render("about");
