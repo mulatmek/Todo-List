@@ -76,6 +76,7 @@ app.post("/",function(req,res){
     }
 });
 
+//fix this get
 app.post("/delete",function(req,res){
     const checkedItemId =req.body.checkbox;
     const listName = req.body.list;
@@ -101,7 +102,6 @@ app.get("/:customListName",function(req,res){
             res.redirect("/"+customListName);
         }else{
             res.render("list",{listTitle:resualts.name ,newListItems: resualts.items});
-           
         }
        
     }
