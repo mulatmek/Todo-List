@@ -10,7 +10,7 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({extended:true}));
 app.set('view engine','ejs');
 
-mongoose.connect('mongodb://localhost:27017/todolistDB',{useNewUrlParser:true});
+mongoose.connect('mongodb+srv://admin-mulat:Daniel9322@cluster0.nsa8app.mongodb.net/todolistDB',{useNewUrlParser:true});
 const itemsSchema = {
     name:String
 };
@@ -105,11 +105,11 @@ app.get("/:customListName",function(req,res){
         }
        
     }
-    else console.log(err);
+   // else console.log(err);
 
     });
-   
-   
+
+    
 });
 
 
